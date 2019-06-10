@@ -6,9 +6,9 @@
 <VirtualHost *:80>
 	ServerName reverse.res.ch
 	
-	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>'
-	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>'
+	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
+	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>/'
 	
-	ProxyPass '/' 'http://<?php print "$static_app"?>'
-	ProxyPassReverse '/' 'http://<?php print "$static_app"?>'
+	ProxyPass '/' 'http://<?php print "$static_app"?>/'
+	ProxyPassReverse '/' 'http://<?php print "$static_app"?>/'
 </VirtualHost>
