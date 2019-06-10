@@ -165,4 +165,4 @@ This time we need to rebuild the apache_static image set our changes.
     docker run -d --name dynamic_animals 
     docker run -d --name apache_rp -p 8080:80 res/apache_rp
 We can now see the changes by accessing in our browser reverse.res.ch:8080. You still need to be careful with the container build order/address !
-## Step 5: Dynamic reverse proxy configuration
+## ## Step 5: Dynamic reverse proxy configuration
