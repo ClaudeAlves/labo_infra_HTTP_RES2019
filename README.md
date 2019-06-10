@@ -223,4 +223,51 @@ It's goal will be to firstly to retrieve the environment variables and the to pr
 now what's left is to call the script in the apache2-foreground file and write the output in reverse-proxy.conf. To do so, this line in the middle of the file is sufficient
 
  `php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf`
+## Bonus step
+We used Traefik to get us through the bonus step.
+First step we get our static/dynamic ( step 1-4) images. Then we create a file named docker-compose.yml.
+Our file :
 
+    Version: '3'
+	services:
+		reverse-proxy:
+			image: traefik # The official v2.0 Traefik docker image
+			command: --api --docker # Enables the web UI and tells Traefik to listen to docker
+			ports:
+				- "80:80" # The HTTP port
+				- "8080:8080" # The Web UI (enabled by --api)
+			volumes:docke
+				- /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+		static_php:
+			image: res/apache_php
+			labels:
+				- "traefik.backend=apache_php"
+				- "traefik.frontend.rule=Host:reverse.res.ch"
+				- "traefik.port=80"
+		animals:
+			image: res/express_dynamic_animals
+			labels:
+				- "traefik.backend=express_dynamic_animals"
+				- "traefik.frontend.rule=Host:reverse.res.ch; PathPrefixStrip:/api/animals/"
+				- "traefik.port=3000"e
+
+In this file each service is runnable in a container we can specify ports ans hostnames with the labels and each service needs an image to be runned.
+To run a service use the command 
+
+    docker-compose up -d <serviceName>
+   or multiple instancies of the same image
+
+    docker-compose up - --scale <serviceName>=<numberOfInstancies>
+   We recommend starting by the proxy server and after the services so he can manage the links.
+   
+
+### Dynamic cluster management
+We can easily see this in our docker-compose.yml we never specified anything about the addresses of the containers. It's all managed by the reverse-proxy server Traefik provides.
+### Load balancing: multiple server nodes
+As stated before we can run multiple instancies of the same images.
+
+     docker-compose up - --scale <serviceName>=<numberOfInstancies>
+
+### Load balancing: round-robin vs sticky session
+[https://docs.traefik.io/basics/#load-balancing](https://docs.traefik.io/basics/#load-balancing)
+[https://docs.traefik.io/basics/#sticky-sessions](https://docs.traefik.io/basics/#sticky-sessions)
