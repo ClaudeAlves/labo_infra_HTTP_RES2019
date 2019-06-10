@@ -7,15 +7,15 @@ services:
     ports:
       - "80:80"     # The HTTP port
       - "8080:8080" # The Web UI (enabled by --api)
-    volumes:
+    volumes:docke
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-  animals:
+  static_php:
     image: res/apache_php
     labels:
       - "traefik.backend=apache_php"
       - "traefik.frontend.rule=Host:reverse.res.ch"
       - "traefik.port=80"
-  static_php:
+  animals:
     image: res/express_dynamic_animals
     labels:
       - "traefik.backend=express_dynamic_animals"
