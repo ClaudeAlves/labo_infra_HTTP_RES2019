@@ -267,6 +267,8 @@ We can easily see this in our docker-compose.yml that we never specified anythin
 As stated before we can run multiple instancies of the same images.
 
      docker-compose up - --scale <serviceName>=<numberOfInstancies>
+     
+Once multiple instance of the same server are running, we can delete some and notice that in every case, as long as there is still one running the website is up and running.
 
 ### Load balancing: round-robin vs sticky session
 to enable sticky sessions add this line in the docker-compose.yml file under the labels of the service you want to get sticky.
