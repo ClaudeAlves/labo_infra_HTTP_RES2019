@@ -21,3 +21,4 @@ services:
       - "traefik.backend=express_dynamic_animals"
       - "traefik.frontend.rule=Host:reverse.res.ch; PathPrefixStrip:/api/animals/"
       - "traefik.port=3000"
+      - "traefik.backend.reverse-proxy.stickiness=true"

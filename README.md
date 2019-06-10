@@ -269,5 +269,11 @@ As stated before we can run multiple instancies of the same images.
      docker-compose up - --scale <serviceName>=<numberOfInstancies>
 
 ### Load balancing: round-robin vs sticky session
-[https://docs.traefik.io/basics/#load-balancing](https://docs.traefik.io/basics/#load-balancing)
+to enable sticky sessions add this line in the docker-compose.yml file under the labels of the service you want to get sticky.
+	
+	
+      - "traefik.backend.reverse-proxy.stickiness=true"
 [https://docs.traefik.io/basics/#sticky-sessions](https://docs.traefik.io/basics/#sticky-sessions)
+By default Traefik works on weighted round robin `wrr`
+You can set it to be dynamic round robin `drr`
+[https://docs.traefik.io/basics/#load-balancing](https://docs.traefik.io/basics/#load-balancing)
