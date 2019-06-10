@@ -165,4 +165,60 @@ This time we need to rebuild the apache_static image set our changes.
     docker run -d --name dynamic_animals 
     docker run -d --name apache_rp -p 8080:80 res/apache_rp
 We can now see the changes by accessing in our browser reverse.res.ch:8080. You still need to be careful with the container build order/address !
-## ## Step 5: Dynamic reverse proxy configuration
+## Step 5: Dynamic reverse proxy configuration
+The goal for this step is to make the reverse proxy configuration dynamic. As for now, the server's ip address are hard-coded in a config file and fixed when building and we'd much rather like to specified said adresses on launch rather than on build. To do so, 4 tasks have do be done. They are :
+
+* Pass environment variables when starting a docker
+* Add a setup phase in the reverse-proxy Dockerfile
+* Create a script to create a template for the reverse-proxy configuration file
+* Retrieve environment variables in the config file
+### Passing environment variables
+
+Docker allows use to easily pass environment variables thanks to the argument -e. The argument can be used like this :
+
+`docker run -e <variable name>=<variable value> <image>`
+
+We can, therefore, run our proxy with two new variables. One for the static serever address and one for the dynamic one.
+
+`docker run -e STATIC_APP=172.17.0.5 -e DYNAMIC_APP=172.17.0.8 image`
+
+but how does one find those addresses you might ask. We can easily retrieve the ip addresses from their conatainer using `docker inspect <container> | grep -i ipaddr`.
+
+### Add a setup phase in the reverse-proxy Dockerfile
+
+To do so we first look at the dockerfile provided on the php apache github [github.com/docker-library/php/](https://github.com/docker-library/php/tree/78125d0d3c32a87a05f56c12ca45778e3d4bb7c9/7.2/stretch/apache). We discover that a script apache2-foreground is launched. We'll take this opportunity to launch our own which will do the same instruction + launching a custom php script to generate the .conf files.
+
+We understand now that the Dockerfile has two extra roles: 
+* Overwrite the apache2-foreground with our own
+* Replace the config files with the ones genrated from the script
+
+Two lines in the middle of the Dockerfile will do the trick
+
+```
+COPY apache2-foreground /usr/local/bin/
+
+COPY templates /var/apache2/templates```
+
+
+### Create a script
+It's goal will be to firstly to retrieve the environment variables and the to print the config file for the reverse-proxy. The script called config-template.php will be really similar to the 001-reverse-proxy.conf desides that the hard-coded addresses become variables initialized from a call with the getenv() method which gets an environment variable value.
+```PHP
+<?php
+	$dynamic_app = getenv("DYNAMIC_APP");
+	$static_app = getenv("STATIC_APP");
+?>
+
+<VirtualHost *:80>
+	ServerName reverse.res.ch
+
+	ProxyPass '/api/animals/' 'http://<?php print "$dynamic_app"?>'
+	ProxyPassReverse '/api/animals/' 'http://<?php print "$dynamic_app"?>'
+
+	ProxyPass '/' 'http://<?php print "$static_app"?>'
+	ProxyPassReverse '/' 'http://<?php print "$static_app"?>'
+</VirtualHost>```
+
+now what's left is to call the script in the apache2-foreground file and write the output in reverse-proxy.conf. To do so, this line in the middle of the file is sufficient
+
+ `php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf`
+
