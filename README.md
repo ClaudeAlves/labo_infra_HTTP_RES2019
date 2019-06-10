@@ -125,3 +125,44 @@ The browser need to send a specific header to know where to redirect the request
     docker run -d --name apache_rp -p 8080:80 res/apache_rp
 
 We can now access our step 1 or 2 putting in our browser `reverse.res.ch:8080` or `reverse.res.ch:8080/api/animals`
+## Step 4 - AJAX requests with JQuery
+In this step, the goal is to setup an AJAX request (not the cleaning product) with JQuery. The request will display on our web page (step1) the first of the random animals we get in our dynamic server (step 2)
+### JavaScript
+We created the file `animals.js` in the folder `apache-php-image/content/vendor/jquery/` which the content is :
+
+    $(function() {
+	console.log("Loading animals...");
+	
+	function loadAnimals() {
+	$.getJSON( "/api/animals/", function(animals) {
+				console.log(animals)
+				var message = "Oh look it's a ";
+				message += animals[0].animal + " it comes from the " + animals[0].type;
+				$(".lead").text(message);
+			});
+		};
+		loadAnimals();
+		setInterval(loadAnimals, 3000);
+	});
+In this code we get some content from `/api/animals/` (animals in a json format) then we display in place of the class lead in the html page a little sentence with the name and type of the first animal found in the json. We repeat this action every 3s with the method setInterval. 
+### index.html
+We now just need to import our javascript in the body of the index.html like :
+
+    <!-- custom script to get a random animal -->
+    <script src="vendor/jquery/animals.js"></script>
+We can note that we need to specifie where we put the animals.js file.
+### Dockerfile changes
+In every dockerfile we added :
+
+    RUN apt-get update && \
+	    apt-get install -y vim
+To be able to use vim in the container. Cause we first started by changing the index.html live in the container.
+### Build and test
+This time we need to rebuild the apache_static image set our changes.
+
+    docker build -t res/apache_php .
+    docker run -d --name apache_static res/apache_php
+    docker run -d --name dynamic_animals 
+    docker run -d --name apache_rp -p 8080:80 res/apache_rp
+We can now see the changes by accessing in our browser reverse.res.ch:8080. You still need to be careful with the container build order/address !
+## ## Step 5: Dynamic reverse proxy configuration
