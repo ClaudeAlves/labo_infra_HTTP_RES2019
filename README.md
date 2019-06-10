@@ -11,20 +11,20 @@ docker file content :
     
    According to our implementation we will need to store our webpage in a folder named content located in the same directory as the Dockerfile. We used a template found on [https://startbootstrap.com](https://startbootstrap.com/).
 ### Apache configuration
-We have the possibility to change the apache configuration, for example we can change where our webpage is located. To do this run a bash in your container using :
+We have the possibility to change the apache configuration, for example we can change where our webpage is located. To do this, run a bash in your container using :
 
     docker exec -it <container_name> /bin/bash
     
   Now you can explore the content of the apache server. We find the .conf files located  in `/etc/apache2/sites_available/`
 
 ### Build and test
-To test what we've done we need to build the docker image with the following command :
+To test what we did, we need to build the docker image with the following command :
 
     docker build -t res/apache_php .
   - -t let us name the image res/apache_php.
   - . tells docker to build the image with the Dockerfile located in the current folder.
  
- We can now run the container :
+ Now, we can run the container :
  
 
     docker run -d -p 8080:80 res/apache_php
@@ -32,7 +32,7 @@ To test what we've done we need to build the docker image with the following com
 - -p let us map the ports of the container to match the ports of the vm who helds the containers so we can access the webpage from outside the outside ( like the browser ).
 - res/apache_php is the image we build on.
 
-To test it find our vm address using the command :
+To test it, find our vm address using the command :
 
     docker-machine ls
    outside of the  vm then simply connect to it using telnet :  
@@ -109,7 +109,7 @@ In our case we had for this run :
 
 ***This value can be different depending on wich container we start first and if we have different containers running.***
 ### Host files
-The browser need to send a specific header to know where to redirect the request. To do so, we have to change the DNS configuration. First find the host file of your system, then add a new line like this.
+The browser need to send a specific header to know where to redirect the request. To do so, we have to change the DNS configuration. First, find the host file of your system, then add a new line like this.
 
     192.168.99.100 reverse.res.ch
  This line is specific for windows docker since my docker vm has this address if you run docker natively just put the address of your reverse proxy apache server (in our case it would have been 172.17.0.4).
@@ -251,7 +251,7 @@ Our file :
 				- "traefik.frontend.rule=Host:reverse.res.ch; PathPrefixStrip:/api/animals/"
 				- "traefik.port=3000"e
 
-In this file each service is runnable in a container we can specify ports ans hostnames with the labels and each service needs an image to be runned.
+In this file, each service is ran in a container. We can specify ports and hostnames with the labels. Each service needs an image to be ran.
 To run a service use the command 
 
     docker-compose up -d <serviceName>
@@ -262,7 +262,7 @@ To run a service use the command
    
 
 ### Dynamic cluster management
-We can easily see this in our docker-compose.yml we never specified anything about the addresses of the containers. It's all managed by the reverse-proxy server Traefik provides.
+We can easily see this in our docker-compose.yml that we never specified anything about the addresses of the containers. It's all managed by the reverse-proxy server Traefik provides.
 ### Load balancing: multiple server nodes
 As stated before we can run multiple instancies of the same images.
 
