@@ -16,7 +16,8 @@ echo "Setup for the RES lab..."
 echo "Static app URL: $STATIC_APP"
 echo "Dynamic app URL: $DYNAMIC_APP"
 
-php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
+# php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
+php /var/apache2/templates/config-template-load-balancing.php > /etc/apache2/sites-available/001-reverse-proxy.conf
 
 
 # Apache gets grumpy about PID files pre-existing
