@@ -249,7 +249,7 @@ Our file :
 			labels:
 				- "traefik.backend=express_dynamic_animals"
 				- "traefik.frontend.rule=Host:reverse.res.ch; PathPrefixStrip:/api/animals/"
-				- "traefik.port=3000"e
+				- "traefik.port=3000"
 
 In this file, each service is ran in a container. We can specify ports and hostnames with the labels. Each service needs an image to be ran.
 To run a service use the command 
