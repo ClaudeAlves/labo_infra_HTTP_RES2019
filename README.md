@@ -197,7 +197,8 @@ Two lines in the middle of the Dockerfile will do the trick
 ```
 COPY apache2-foreground /usr/local/bin/
 
-COPY templates /var/apache2/templates```
+COPY templates /var/apache2/templates
+```
 
 
 ### Create a script
@@ -216,7 +217,8 @@ It's goal will be to firstly to retrieve the environment variables and the to pr
 
 	ProxyPass '/' 'http://<?php print "$static_app"?>'
 	ProxyPassReverse '/' 'http://<?php print "$static_app"?>'
-</VirtualHost>```
+</VirtualHost>
+```
 
 now what's left is to call the script in the apache2-foreground file and write the output in reverse-proxy.conf. To do so, this line in the middle of the file is sufficient
 
